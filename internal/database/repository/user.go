@@ -20,8 +20,8 @@ func NewUserRepository() UserRepository {
 
 func (r *userRepository) GetUserByID(id string) (*model.User, error) {
 	return nil, nil
-}		
+}
 
 func (r *userRepository) CreateUser(user *model.User) error {
-	return nil 
+	return nil
 }
