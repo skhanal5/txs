@@ -1,22 +1,41 @@
 services:
   database:
     image: postgres:15
-    container_name: database
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=txs-db
+      - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
   flyway:
-    image: flyway/flyway:11-azure
+    image: flyway/flyway:latest
+    platform: linux/amd64
     depends_on:
       - database
     environment:
       - FLYWAY_URL=${FLYWAY_URL}
       - FLYWAY_USER=${FLYWAY_USER}
       - FLYWAY_PASSWORD=${FLYWAY_PASSWORD}
-      - FLYWAY_CONNECT_RETRIES=10
-    command: migrate
+      - FLYWAY_CONNECT_RETRIES=60
+    command: "migrate"
     volumes:
       - ./sql:/flyway/sql
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - database
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "8080:80"
+  dozzle:
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9090:8080
+volumes:
+  pgadmin-data:
