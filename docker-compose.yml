@@ -1,10 +1,22 @@
 services:
   database:
-      image: postgres:15
-      container_name: database
-      ports:
-        - "5432:5432"
-      environment:
-        - POSTGRES_DB=txs-db
-        - POSTGRES_USER=${DB_USER}
-        - POSTGRES_PASSWORD=${DB_PASSWORD}
+    image: postgres:15
+    container_name: database
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=txs-db
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+  flyway:
+    image: flyway/flyway:11-azure
+    depends_on:
+      - database
+    environment:
+      - FLYWAY_URL=${FLYWAY_URL}
+      - FLYWAY_USER=${FLYWAY_USER}
+      - FLYWAY_PASSWORD=${FLYWAY_PASSWORD}
+      - FLYWAY_CONNECT_RETRIES=10
+    command: migrate
+    volumes:
+      - ./sql:/flyway/sql
