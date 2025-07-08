@@ -20,6 +20,20 @@ services:
     command: "migrate"
     volumes:
       - ./sql:/flyway/sql
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - database
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "8080:8080"
   pgadmin:
     image: dpage/pgadmin4
     depends_on:
@@ -30,12 +44,12 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     ports:
-      - "8080:80"
+      - "8001:80"
   dozzle:
     image: amir20/dozzle:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - 9090:8080
+      - 8000:8080
 volumes:
   pgadmin-data:
