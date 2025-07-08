@@ -12,7 +12,7 @@ import (
 
 type AuthRepository interface {
 	GetUserByEmail(id string) (*model.User, error)
-	CreateUser(user *model.User) error
+	CreateUser(user model.User) error
 }
 
 type PostgresAuthRepository struct {
@@ -41,7 +41,7 @@ func (r *PostgresAuthRepository) GetUserByEmail(email string) (*model.User, erro
 	return user, nil
 }
 
-func (r *PostgresAuthRepository) CreateUser(user *model.User) error {
+func (r *PostgresAuthRepository) CreateUser(user model.User) error {
 	// TODO: unique email checks	
 	
 	sql, params, err := goqu.Insert("users").Rows(
