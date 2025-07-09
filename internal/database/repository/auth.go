@@ -28,7 +28,7 @@ func NewPostgresAuthRepository(ctx context.Context, connection *pgxpool.Pool, lo
 }
 
 func (r *PostgresAuthRepository) GetUserByEmail(email string) (*model.User, error) {
-	sql, params, err := goqu.From("users").Where(goqu.Ex{"email": email}).ToSQL()
+	sql, params, err := goqu.From("users").Select("email", "password").Where(goqu.Ex{"email": email}).ToSQL()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build select query: %w", err)
 	}

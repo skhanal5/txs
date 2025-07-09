@@ -8,7 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-var validate *validator.Validate
+var validate = validator.New()
 
 func decode(req interface{}, r *http.Request) error {
 	defer r.Body.Close()
