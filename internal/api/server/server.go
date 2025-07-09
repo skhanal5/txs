@@ -26,6 +26,7 @@ func Start(ctx context.Context, cfg *config.Config, logger *zap.Logger) error {
 	authHandler := handler.NewAuthHandler(authService, logger)
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", handler.GetHealth)
 	mux.HandleFunc("POST /auth/register", authHandler.RegisterUser)
 	mux.HandleFunc("POST /auth/login", authHandler.AuthenticateUser)
 	logger.Info("Server starting on :8080")
