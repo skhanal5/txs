@@ -11,7 +11,7 @@ import (
 )
 
 type AuthRepository interface {
-	GetUserByEmail(id string) (*model.User, error)
+	GetUserByEmail(email string) (*model.User, error)
 	CreateUser(user model.User) error
 }
 
@@ -20,8 +20,8 @@ type PostgresAuthRepository struct {
 	logger *zap.Logger
 }
 
-func NewPostgresAuthRepository(ctx context.Context, connection *pgxpool.Pool, logger *zap.Logger) PostgresAuthRepository {
-	return PostgresAuthRepository{
+func NewPostgresAuthRepository(ctx context.Context, connection *pgxpool.Pool, logger *zap.Logger) *PostgresAuthRepository {
+	return &PostgresAuthRepository{
 		conn: connection,
 		logger: logger,
 	}

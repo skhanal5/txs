@@ -23,7 +23,8 @@ PGADMIN_DEFAULT_PASSWORD=bar
 
 ### Docker Services
 Run `make rund` to start each of the services. It will spin up the following:
-- postgres
+- postgres on port 5432
 - flyway (temporarily)
-- pgadmin (http://localhost:8080)
-- dozzle (http://localhost:9090)
+- txs (http://localhost:8080)
+- pgadmin (http://localhost:8001)
+- dozzle (http://localhost:8000)

@@ -6,7 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/skhanal5/txs/internal/database/model"
 	"github.com/skhanal5/txs/internal/database/repository"
-	"github.com/skhanal5/txs/internal/handler/payload"
+	"github.com/skhanal5/txs/internal/api/payload"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )

@@ -1,15 +1,18 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
-	"github.com/skhanal5/txs/internal/handler/routes"
+	"context"
+	"github.com/skhanal5/txs/internal/api/server"
+	"github.com/skhanal5/txs/internal/config"
+	"go.uber.org/zap"
 )
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /health", routes.GetHealth)
-	log.Println("Server starting on :8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	cfg := config.NewConfig()
+	logger := config.NewLogger("txs", cfg.Environment)
+	ctx := context.Background()
+
+	if err := server.Start(ctx, cfg, logger); err != nil {
+		logger.Fatal("Server exited with error", zap.Error(err))
+	}
 }
