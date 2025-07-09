@@ -1,7 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"context"
+	"github.com/skhanal5/txs/internal/api/server"
+	"github.com/skhanal5/txs/internal/config"
+	"go.uber.org/zap"
+)
 
 func main() {
-	fmt.Println("Hello world!")
+	cfg := config.NewConfig()
+	logger := config.NewLogger("txs", cfg.Environment)
+	ctx := context.Background()
+
+	if err := server.Start(ctx, cfg, logger); err != nil {
+		logger.Fatal("Server exited with error", zap.Error(err))
+	}
 }
