@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/skhanal5/txs/internal/api/payload"
 	"github.com/skhanal5/txs/internal/database/model"
 	"github.com/skhanal5/txs/internal/database/repository"
-	"github.com/skhanal5/txs/internal/api/payload"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -18,19 +18,19 @@ type AuthService interface {
 
 type authService struct {
 	repository repository.AuthRepository
-	logger *zap.Logger
+	logger     *zap.Logger
 }
 
 func NewAuthService(authRepository repository.AuthRepository, logger *zap.Logger) AuthService {
 	return &authService{
 		repository: authRepository,
-		logger: logger,
+		logger:     logger,
 	}
 }
 
 type claims struct {
-	Email string `json:"email"`
-	Role string `json:"role"`
+	Email                string `json:"email"`
+	Role                 string `json:"role"`
 	jwt.RegisteredClaims `json:"registered_claims"`
 }
 
@@ -38,21 +38,21 @@ func (a *authService) createJWT(email string) (string, error) {
 	key := []byte("your_secret_key") // TODO: replace
 	claims := claims{
 		Email: email,
-		Role:   "user",
+		Role:  "user",
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
-	
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims) 
-	s, err := t.SignedString(key) 
-	if err != nil {	
+
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	s, err := t.SignedString(key)
+	if err != nil {
 		a.logger.Error("failed to sign JWT", zap.Error(err))
 		return "", err
 	}
 	return s, nil
-}	
+}
 
 func (a *authService) AuthenticateUser(request payload.AuthRequest) (payload.AuthResponse, error) {
 	user, err := a.repository.GetUserByEmail(request.Email)
@@ -62,7 +62,7 @@ func (a *authService) AuthenticateUser(request payload.AuthRequest) (payload.Aut
 	}
 	if user == nil {
 		a.logger.Error("user not found", zap.String("email", request.Email))
-		return payload.AuthResponse{}, nil 
+		return payload.AuthResponse{}, nil
 	}
 	err = bcrypt.CompareHashAndPassword(user.Password, []byte(request.Password))
 	if err != nil {
@@ -97,5 +97,3 @@ func (s *authService) RegisterUser(request payload.RegisterUserRequest) error {
 	}
 	return nil
 }
-
-

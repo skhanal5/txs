@@ -1,21 +1,21 @@
 package handler
 
 import (
-	"net/http"
 	"github.com/skhanal5/txs/internal/api/payload"
 	"github.com/skhanal5/txs/internal/api/service"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 type AuthHandler struct {
 	authService service.AuthService
-	logger *zap.Logger
+	logger      *zap.Logger
 }
 
 func NewAuthHandler(authService service.AuthService, logger *zap.Logger) *AuthHandler {
 	return &AuthHandler{
 		authService: authService,
-		logger: logger,
+		logger:      logger,
 	}
 }
 

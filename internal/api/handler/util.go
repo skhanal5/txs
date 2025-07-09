@@ -12,15 +12,15 @@ var validate *validator.Validate
 
 func decode(req interface{}, r *http.Request) error {
 	defer r.Body.Close()
-    decoder := json.NewDecoder(r.Body)
+	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(req)
-	if err != nil {	
+	if err != nil {
 		return fmt.Errorf("failed to decode request body: %w", err)
 	}
 	if err := validate.Struct(req); err != nil {
 		if _, ok := err.(*validator.ValidationErrors); ok {
 			return fmt.Errorf("validation error: %w", err)
-		}	
+		}
 	}
 	return err
 }

@@ -31,8 +31,8 @@ func Start(ctx context.Context, cfg *config.Config, logger *zap.Logger) error {
 	logger.Info("Server starting on :8080")
 
 	server := &http.Server{
-		Addr:    ":8080",
-		Handler: mux,	
+		Addr:         ":8080",
+		Handler:      mux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,

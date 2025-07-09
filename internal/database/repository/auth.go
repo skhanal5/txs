@@ -16,13 +16,13 @@ type AuthRepository interface {
 }
 
 type PostgresAuthRepository struct {
-	conn *pgxpool.Pool
+	conn   *pgxpool.Pool
 	logger *zap.Logger
 }
 
 func NewPostgresAuthRepository(ctx context.Context, connection *pgxpool.Pool, logger *zap.Logger) *PostgresAuthRepository {
 	return &PostgresAuthRepository{
-		conn: connection,
+		conn:   connection,
 		logger: logger,
 	}
 }
@@ -42,8 +42,8 @@ func (r *PostgresAuthRepository) GetUserByEmail(email string) (*model.User, erro
 }
 
 func (r *PostgresAuthRepository) CreateUser(user model.User) error {
-	// TODO: unique email checks	
-	
+	// TODO: unique email checks
+
 	sql, params, err := goqu.Insert("users").Rows(
 		&user,
 	).ToSQL()
