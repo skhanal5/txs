@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     currency_code VARCHAR(3) REFERENCES currency_codes(code) NOT NULL,
     status VARCHAR(12) REFERENCES account_statuses(code) NOT NULL DEFAULT 'active',
     type VARCHAR(12) REFERENCES account_types(code) NOT NULL,
+    account_number VARCHAR(20) NOT NULL UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
