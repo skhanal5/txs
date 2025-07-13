@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/shopspring/decimal"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/skhanal5/txs/internal/database/model"
 	"go.uber.org/zap"
@@ -12,9 +13,9 @@ import (
 
 
 type AccountRepository interface {
-	GetAccountsById(userID string) (*model.Account, error)
+	GetAccountsById(userID string) ([]model.Account, error)
 	CreateAccount(account model.Account) error
-	TransferFunds(fromUser, toUser string, amount float64) error
+	TransferFunds(fromUser, toUser string, amount decimal.Decimal) error
 }
 
 type PostgresAccountRepository struct {
@@ -30,7 +31,7 @@ func NewPostgresAccountRepository(connection *pgxpool.Pool, logger *zap.Logger) 
 	}
 }
 
-func (r *PostgresAccountRepository) GetAccountsById(userID string) ([]*model.Account, error) {
+func (r *PostgresAccountRepository) GetAccountsById(userID string) ([]model.Account, error) {
 	sql, params, err := goqu.From("accounts").Select("*").Where(goqu.Ex{"user_id": "*"}).ToSQL()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build select query: %w", err)
@@ -40,7 +41,7 @@ func (r *PostgresAccountRepository) GetAccountsById(userID string) ([]*model.Acc
 		return nil, fmt.Errorf("failed to execute select query: %w", err)
 	}
 	defer rows.Close()
-	accounts := []*model.Account{}
+	accounts := []model.Account{}
 	err = rows.Scan(&accounts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal results: %w", err)
