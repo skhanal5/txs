@@ -24,7 +24,7 @@ type PostgresAccountRepository struct {
 }
 
 
-func NewPostgresAccountRepository(connection *pgxpool.Pool, logger *zap.Logger) *PostgresAccountRepository {
+func NewPostgresAccountRepository(ctx context.Context, connection *pgxpool.Pool, logger *zap.Logger) *PostgresAccountRepository {
 	return &PostgresAccountRepository{
 		conn:   connection,
 		logger: logger,
@@ -65,7 +65,7 @@ func (r *PostgresAccountRepository) CreateAccount(account model.Account) error {
 	return nil
 }
 
-func (r *PostgresAccountRepository) TransferFunds(fromUser, toUser string, amount float64) error {
+func (r *PostgresAccountRepository) TransferFunds(fromUser, toUser string, amount decimal.Decimal) error {
 	tx, err := r.conn.Begin(context.Background())
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)

@@ -19,12 +19,14 @@ type AuthService interface {
 type authService struct {
 	repository repository.AuthRepository
 	logger     *zap.Logger
+	secretKey []byte
 }
 
-func NewAuthService(authRepository repository.AuthRepository, logger *zap.Logger) AuthService {
+func NewAuthService(authRepository repository.AuthRepository, logger *zap.Logger, secretKey []byte) AuthService {
 	return &authService{
 		repository: authRepository,
 		logger:     logger,
+		secretKey: secretKey,
 	}
 }
 
@@ -35,7 +37,6 @@ type claims struct {
 }
 
 func (a *authService) createJWT(email string) (string, error) {
-	key := []byte("your_secret_key") // TODO: replace
 	claims := claims{
 		Email: email,
 		Role:  "user",
@@ -46,7 +47,7 @@ func (a *authService) createJWT(email string) (string, error) {
 	}
 
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	s, err := t.SignedString(key)
+	s, err := t.SignedString(a.secretKey)
 	if err != nil {
 		a.logger.Error("failed to sign JWT", zap.Error(err))
 		return "", err

@@ -12,7 +12,7 @@ type Account struct {
 type CreateAccountRequest Account
 
 type AccountsResponse struct {
-	Accounts []*Account `json:"accounts"`
+	Accounts []Account `json:"accounts"`
 }
 
 
