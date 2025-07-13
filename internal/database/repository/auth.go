@@ -34,7 +34,7 @@ func (r *PostgresAuthRepository) GetUserByEmail(email string) (*model.User, erro
 	}
 	row := r.conn.QueryRow(context.Background(), sql, params...)
 	user := &model.User{}
-	err = row.Scan(&user.Email, &user.Password)
+	err = row.Scan(&user.ID, &user.Email, &user.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute select query: %w", err)
 	}
