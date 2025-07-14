@@ -30,15 +30,15 @@ func NewAuthService(authRepository repository.AuthRepository, logger *zap.Logger
 	}
 }
 
-type claims struct {
-	Email                string `json:"email"`
+type Claims struct {
+	UserID                string `json:"user_id"`
 	Role                 string `json:"role"`
 	jwt.RegisteredClaims `json:"registered_claims"`
 }
 
-func (a *authService) createJWT(email string) (string, error) {
-	claims := claims{
-		Email: email,
+func (a *authService) createJWT(id string) (string, error) {
+	claims := Claims{
+		UserID: id,
 		Role:  "user",
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
@@ -70,7 +70,7 @@ func (a *authService) AuthenticateUser(request payload.AuthRequest) (payload.Aut
 		a.logger.Error("password mismatch", zap.Error(err))
 		return payload.AuthResponse{}, err
 	}
-	accessToken, err := a.createJWT(request.Email)
+	accessToken, err := a.createJWT(user.ID)
 	if err != nil {
 		a.logger.Error("failed to create access token", zap.Error(err))
 		return payload.AuthResponse{}, err

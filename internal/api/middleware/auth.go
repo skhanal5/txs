@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/skhanal5/txs/internal/api/service"
 )
 
 type contextKey string
@@ -44,19 +45,18 @@ func (am *AuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := am.validateToken(tokenStr)
-	if err != nil {
+	token, claims, err := am.validateToken(tokenStr)
+	if err != nil || !token.Valid {
 		http.Error(w, "Invalid token: "+err.Error(), http.StatusUnauthorized)
 		return
 	}
 
-	userID, err := am.extractUserID(token)
-	if err != nil {
-		http.Error(w, "Invalid token claims: "+err.Error(), http.StatusUnauthorized)
+	if claims.UserID == "" {
+		http.Error(w, "user_id claim missing", http.StatusUnauthorized)
 		return
 	}
 
-	r = am.attachUserToContext(r, userID)
+	r = am.attachUserToContext(r, claims.UserID)
 	am.handler.ServeHTTP(w, r)
 }
 
@@ -71,29 +71,21 @@ func (am *AuthMiddleware) getTokenFromHeader(r *http.Request) (string, error) {
 	return strings.TrimPrefix(authHeader, "Bearer "), nil
 }
 
-func (am *AuthMiddleware) validateToken(tokenStr string) (*jwt.Token, error) {
-	return jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+func (am *AuthMiddleware) validateToken(tokenStr string) (*jwt.Token, *service.Claims, error) {
+	claims := &service.Claims{}
+
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
 		return am.secret, nil
 	})
-}
 
-func (am *AuthMiddleware) extractUserID(token *jwt.Token) (string, error) {
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		return "", errors.New("invalid token claims")
+	if err != nil {
+		return nil, nil, err
 	}
-	userIDRaw, exists := claims["user_id"]
-	if !exists {
-		return "", errors.New("user_id claim missing")
-	}
-	userID, ok := userIDRaw.(string)
-	if !ok {
-		return "", errors.New("user_id claim is not a string")
-	}
-	return userID, nil
+
+	return token, claims, nil
 }
 
 func (am *AuthMiddleware) attachUserToContext(r *http.Request, userID string) *http.Request {
