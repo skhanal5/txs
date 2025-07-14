@@ -35,7 +35,7 @@ func Start(ctx context.Context, cfg *config.Config, logger *zap.Logger) error {
 	mux.HandleFunc("GET /health", handler.GetHealth)
 	mux.HandleFunc("POST /auth/register", authHandler.RegisterUser)
 	mux.HandleFunc("POST /auth/login", authHandler.AuthenticateUser)
-	mux.HandleFunc("POST /account", accountHandler.GetAccountsById)
+	mux.HandleFunc("POST /account", accountHandler.CreateAccount)
 	mux.HandleFunc("GET /accounts", accountHandler.GetAccountsById)
 
 	skipPaths := []string{
